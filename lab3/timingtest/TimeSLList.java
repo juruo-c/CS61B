@@ -38,7 +38,8 @@ public class TimeSLList {
             Stopwatch sw = new Stopwatch();
             for (int j = 1; j <= M; j ++ )
                 tmp.getLast();
-            times.addLast(sw.elapsedTime());
+            double timeInSeconds = sw.elapsedTime();
+            times.addLast(timeInSeconds);
         }
         printTimingTable(Ns, times, opCounts);
     }
