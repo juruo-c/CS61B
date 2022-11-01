@@ -195,4 +195,47 @@ public class LinkedListDequeTest {
         }
     }
 
+    @Test
+    public void testEqual() {
+        LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
+        LinkedListDeque<Integer> lld2 = new LinkedListDeque<>();
+        LinkedListDeque<Integer> lld3 = new LinkedListDeque<>();
+        for (int i = 0; i < 100; i ++ ) {
+            lld1.addLast(i);
+            lld2.addLast(i);
+            lld3.addLast(100 - i);
+        }
+
+        assertTrue(lld1.equals(lld1));
+        assertFalse(lld1.equals(null));
+        int cmh = 21;
+        assertFalse(lld1.equals(cmh));
+        assertTrue(lld1.equals(lld2));
+        assertFalse(lld1.equals(lld3));
+
+        LinkedListDeque<String> lld4 = new LinkedListDeque<>();
+        LinkedListDeque<String> lld5 = new LinkedListDeque<>();
+        LinkedListDeque<String> lld6 = new LinkedListDeque<>();
+        for (int i = 0; i < 100; i ++ ) {
+            lld1.addLast(i);
+            lld2.addLast(i);
+            lld3.addLast(100 - i);
+        }
+
+        assertTrue(lld1.equals(lld2));
+        assertFalse(lld1.equals(lld3));
+
+    }
+
+    @Test
+    public void testIterator() {
+        LinkedListDeque<Integer> lld = new LinkedListDeque<>();
+        for (int i = 0; i < 100; i ++ )
+            lld.addLast(i);
+        int i = 0;
+        for (int x : lld){
+            assertEquals(i, x);
+            i += 1;
+        }
+    }
 }

@@ -168,4 +168,47 @@ public class ArrayDequeTest {
             }
         }
     }
+    @Test
+    public void testEqual() {
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
+        ArrayDeque<Integer> lld2 = new ArrayDeque<>();
+        ArrayDeque<Integer> lld3 = new ArrayDeque<>();
+        for (int i = 0; i < 100; i ++ ) {
+            lld1.addLast(i);
+            lld2.addLast(i);
+            lld3.addLast(100 - i);
+        }
+
+        assertTrue(lld1.equals(lld1));
+        assertFalse(lld1.equals(null));
+        int cmh = 21;
+        assertFalse(lld1.equals(cmh));
+        assertTrue(lld1.equals(lld2));
+        assertFalse(lld1.equals(lld3));
+
+        ArrayDeque<String> lld4 = new ArrayDeque<>();
+        ArrayDeque<String> lld5 = new ArrayDeque<>();
+        ArrayDeque<String> lld6 = new ArrayDeque<>();
+        for (int i = 0; i < 100; i ++ ) {
+            lld1.addLast(i);
+            lld2.addLast(i);
+            lld3.addLast(100 - i);
+        }
+
+        assertTrue(lld1.equals(lld2));
+        assertFalse(lld1.equals(lld3));
+
+    }
+
+    @Test
+    public void testIterator() {
+        ArrayDeque<Integer> lld = new ArrayDeque<>();
+        for (int i = 0; i < 100; i ++ )
+            lld.addLast(i);
+        int i = 0;
+        for (int x : lld){
+            assertEquals(i, x);
+            i += 1;
+        }
+    }
 }
