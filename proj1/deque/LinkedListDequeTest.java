@@ -123,15 +123,6 @@ public class LinkedListDequeTest {
     }
 
     @Test
-    /** create a one element Deque and the size of it should be 1 */
-    public void nonEmptyInitialTest() {
-        LinkedListDeque<Integer> lld = new LinkedListDeque<>(1);
-
-        assertFalse("The Deque should not be empty!", lld.isEmpty());
-        assertEquals("The size of Deque should be 1!", 1, lld.size());
-    }
-
-    @Test
     /** Test get method */
     public void getTest() {
         LinkedListDeque<Integer> lld = new LinkedListDeque<>();
@@ -200,9 +191,11 @@ public class LinkedListDequeTest {
         LinkedListDeque<Integer> lld1 = new LinkedListDeque<>();
         LinkedListDeque<Integer> lld2 = new LinkedListDeque<>();
         LinkedListDeque<Integer> lld3 = new LinkedListDeque<>();
+        ArrayDeque<Integer> ad = new ArrayDeque<>();
         for (int i = 0; i < 100; i ++ ) {
             lld1.addLast(i);
             lld2.addLast(i);
+            ad.addLast(i);
             lld3.addLast(100 - i);
         }
 
@@ -213,18 +206,7 @@ public class LinkedListDequeTest {
         assertTrue(lld1.equals(lld2));
         assertFalse(lld1.equals(lld3));
 
-        LinkedListDeque<String> lld4 = new LinkedListDeque<>();
-        LinkedListDeque<String> lld5 = new LinkedListDeque<>();
-        LinkedListDeque<String> lld6 = new LinkedListDeque<>();
-        for (int i = 0; i < 100; i ++ ) {
-            lld1.addLast(i);
-            lld2.addLast(i);
-            lld3.addLast(100 - i);
-        }
-
-        assertTrue(lld1.equals(lld2));
-        assertFalse(lld1.equals(lld3));
-
+        assertTrue(lld1.equals(ad));
     }
 
     @Test

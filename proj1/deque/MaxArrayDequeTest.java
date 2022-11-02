@@ -40,7 +40,7 @@ public class MaxArrayDequeTest {
     @Test
     public void TestMaxWithoutCompare() {
         IntegerComparator c = new IntegerComparator();
-        MaxArrayDeque<Integer> array = new MaxArrayDeque<>();
+        MaxArrayDeque<Integer> array = new MaxArrayDeque<>(c);
         for (int i = 0; i < 100; i ++ ) {
             array.addLast(i);
             array.addFirst(i);

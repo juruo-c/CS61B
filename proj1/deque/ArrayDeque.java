@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
+public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
     private T[] items;
     private int nextFirst;
@@ -23,8 +23,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
 
         // copy items to d
         int len = items.length;
-        for (int i = (nextFirst + 1) % len, j = 0; j < size; i = (i + 1) % len, j ++)
+        for (int i = (nextFirst + 1) % len, j = 0; j < size; i = (i + 1) % len, j++) {
             d[j] = items[i];
+        }
 
         // update items/nextFirst/nextLast
         items = d;
@@ -35,9 +36,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     /** add item to the front of LinkedList Deque */
     @Override
     public void addFirst(T item) {
-        if (size == items.length)
+        if (size == items.length) {
             resize(size * 2);
-        size ++;
+        }
+        size++;
         items[nextFirst] = item;
         nextFirst = (nextFirst - 1 + items.length) % items.length;
     }
@@ -45,9 +47,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     /** add item to the back of LinkedList Deque */
     @Override
     public void addLast(T item) {
-        if (size == items.length)
+        if (size == items.length) {
             resize(size * 2);
-        size ++;
+        }
+        size++;
         items[nextLast] = item;
         nextLast = (nextLast + 1) % items.length;
     }
@@ -62,7 +65,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     @Override
     public void printDeque() {
         int len = items.length;
-        for (int i = (nextFirst + 1) % len, j = 0; j < size; i = (i + 1) % len, j ++) {
+        for (int i = (nextFirst + 1) % len, j = 0; j < size; i = (i + 1) % len, j++) {
             System.out.println(items[i] + " ");
         }
         System.out.println();
@@ -71,11 +74,13 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     /** remove and return the first item of Deque */
     @Override
     public T removeFirst() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
-        if (size == items.length / 4 && items.length > 8)
+        }
+        if (size == items.length / 4 && items.length > 8) {
             resize(items.length / 2);
-        size --;
+        }
+        size--;
         T x = items[(nextFirst + 1) % items.length];
         nextFirst = (nextFirst + 1) % items.length;
         return x;
@@ -84,11 +89,13 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     /** remove and return the last item of Deque */
     @Override
     public T removeLast() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
-        if (size == items.length / 4 && items.length > 8)
+        }
+        if (size == items.length / 4 && items.length > 8) {
             resize(items.length / 4);
-        size --;
+        }
+        size--;
         T x = items[(nextLast - 1 + items.length) % items.length];
         nextLast = (nextLast - 1 + items.length) % items.length;
         return x;
@@ -97,8 +104,9 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     /** return the item at the given index(from 0) (using iteration)*/
     @Override
     public T get(int index) {
-        if (index < 0 || index >= size)
+        if (index < 0 || index >= size) {
             return null;
+        }
         int p = (nextFirst + 1 + index) % items.length;
         return items[p];
     }
@@ -108,10 +116,10 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
         return new ArrayDequeIterator();
     }
 
-    private class ArrayDequeIterator implements Iterator<T>{
+    private class ArrayDequeIterator implements Iterator<T> {
         private int wisPos = 1;
         @Override
-        public boolean hasNext(){
+        public boolean hasNext() {
             return wisPos <= size;
         }
 
@@ -126,17 +134,22 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
     /** return whether or not the parameter o is equal to the Deque */
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null)
+        }
+        if (o == null) {
             return false;
-        if (!(o instanceof ArrayDeque))
+        }
+        if (!(o instanceof Deque)) {
             return false;
-        ArrayDeque<T> other = (ArrayDeque<T>) o;
-        if (other.size() != this.size())
+        }
+        Deque<T> other = (Deque<T>) o;
+        if (other.size() != this.size()) {
             return false;
-        for (int i = 0; i < this.size(); i ++ ) {
-            if (! this.get(i).equals(other.get(i))) {
+        }
+
+        for (int i = 0; i < this.size(); i++) {
+            if (!this.get(i).equals(other.get(i))) {
                 return false;
             }
         }
