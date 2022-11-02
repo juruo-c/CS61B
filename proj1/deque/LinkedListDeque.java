@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Iterable<T>{
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T>{
     private class DequeNode {
         public T item;
         public DequeNode next;
@@ -35,6 +35,7 @@ public class LinkedListDeque<T> implements Iterable<T>{
     }
 
     /** add item to the front of LinkedList Deque */
+    @Override
     public void addFirst(T item) {
         size ++;
         // create new DequeNode q and update its prev as sentinel and next as sentinel.next
@@ -47,6 +48,7 @@ public class LinkedListDeque<T> implements Iterable<T>{
     }
 
     /** add item to the back of LinkedList Deque */
+    @Override
     public void addLast(T item) {
         size ++;
         // create new DequeNode q and update its prev as sentinel.prev and next as sentinel
@@ -58,17 +60,14 @@ public class LinkedListDeque<T> implements Iterable<T>{
         sentinel.prev = q;
     }
 
-    /** judge if the Deque is empty */
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
     /** return the size of Deque */
+    @Override
     public int size() {
         return size;
     }
 
     /** print the item of Deque from first to last */
+    @Override
     public void printDeque() {
         DequeNode q = sentinel.next;
         for (int i = 0; i < size; i ++ ) {
@@ -79,6 +78,7 @@ public class LinkedListDeque<T> implements Iterable<T>{
     }
 
     /** remove and return the first item of Deque */
+    @Override
     public T removeFirst() {
         if (isEmpty())
             return null;
@@ -91,6 +91,7 @@ public class LinkedListDeque<T> implements Iterable<T>{
     }
 
     /** remove and return the last item of Deque */
+    @Override
     public T removeLast() {
         if (isEmpty())
             return null;
@@ -103,6 +104,7 @@ public class LinkedListDeque<T> implements Iterable<T>{
     }
 
     /** return the item at the given index(from 0) (using iteration)*/
+    @Override
     public T get(int index) {
         if (index >= size() || index < 0)
             return null;
@@ -127,6 +129,7 @@ public class LinkedListDeque<T> implements Iterable<T>{
         return getRecursiveHelper(sentinel.next, index);
     }
 
+    @Override
     public Iterator<T> iterator() {
         return new LinkedListDequeIterator();
     }

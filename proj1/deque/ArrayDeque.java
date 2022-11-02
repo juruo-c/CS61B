@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class ArrayDeque<T> implements Iterable<T>{
+public class ArrayDeque<T> implements Iterable<T>, Deque<T>{
 
     private T[] items;
     private int nextFirst;
@@ -33,6 +33,7 @@ public class ArrayDeque<T> implements Iterable<T>{
     }
 
     /** add item to the front of LinkedList Deque */
+    @Override
     public void addFirst(T item) {
         if (size == items.length)
             resize(size * 2);
@@ -42,6 +43,7 @@ public class ArrayDeque<T> implements Iterable<T>{
     }
 
     /** add item to the back of LinkedList Deque */
+    @Override
     public void addLast(T item) {
         if (size == items.length)
             resize(size * 2);
@@ -50,17 +52,14 @@ public class ArrayDeque<T> implements Iterable<T>{
         nextLast = (nextLast + 1) % items.length;
     }
 
-    /** judge if the Deque is empty */
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
     /** return the size of Deque */
+    @Override
     public int size() {
         return size;
     }
 
     /** print the item of Deque from first to last */
+    @Override
     public void printDeque() {
         int len = items.length;
         for (int i = (nextFirst + 1) % len, j = 0; j < size; i = (i + 1) % len, j ++) {
@@ -70,6 +69,7 @@ public class ArrayDeque<T> implements Iterable<T>{
     }
 
     /** remove and return the first item of Deque */
+    @Override
     public T removeFirst() {
         if (isEmpty())
             return null;
@@ -82,6 +82,7 @@ public class ArrayDeque<T> implements Iterable<T>{
     }
 
     /** remove and return the last item of Deque */
+    @Override
     public T removeLast() {
         if (isEmpty())
             return null;
@@ -94,6 +95,7 @@ public class ArrayDeque<T> implements Iterable<T>{
     }
 
     /** return the item at the given index(from 0) (using iteration)*/
+    @Override
     public T get(int index) {
         if (index < 0 || index >= size)
             return null;
@@ -101,6 +103,7 @@ public class ArrayDeque<T> implements Iterable<T>{
         return items[p];
     }
 
+    @Override
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
