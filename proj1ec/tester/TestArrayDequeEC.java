@@ -34,13 +34,13 @@ public class TestArrayDequeEC {
             else if (randomNumber == 2) {
                 Integer expect = ads.removeFirst();
                 Integer actual = sad.removeFirst();
-                opString += "removeFirst(): " + actual + "\n";
+                opString += "removeFirst()\n";
                 assertEquals(opString, expect, actual);
             }
             else if (randomNumber == 3) {
                 Integer expect = ads.removeLast();
                 Integer actual = sad.removeLast();
-                opString += "removeLast(): " + actual + "\n";
+                opString += "removeLast()\n";
                 assertEquals(opString, expect, actual);
             }
         }
