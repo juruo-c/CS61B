@@ -139,13 +139,15 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
             }
             // find successor and replace
             BSTNode successor = curNode.leftChild;
+            BSTNode parent = curNode;
             while (successor.rightChild != null) {
+                parent = successor;
                 successor = successor.rightChild;
             }
             curNode.key = successor.key;
             curNode.value = successor.value;
             // delete successor
-            removeHelper(successor, successor.key);
+            removeHelper(parent, successor.key);
         }
         return curNode;
     }
