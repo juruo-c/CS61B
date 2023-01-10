@@ -113,43 +113,42 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
         return keys;
     }
 
-    private BSTNode findParent(BSTNode curNode, BSTNode parentNode, K key) {
-        if (curNode == null) {
-            return null;
-        }
-        int c = key.compareTo(curNode.key);
-        if (c < 0) {
-            return findParent(curNode.leftChild, curNode, key);
-        }
-        else if(c > 0) {
-            return findParent(curNode.rightChild, curNode, key);
-        }
-        else {
-            return parentNode;
-        }
-    }
-
-    private BSTNode findNode(BSTNode curNode, K key) {
-        if (curNode == null) {
-            return null;
-        }
-        int c = key.compareTo(curNode.key);
-        if (c < 0) {
-            return findNode(curNode.leftChild, key);
-        }
-        else if(c > 0) {
-            return findNode(curNode.rightChild, key);
-        }
-        else {
-            return curNode;
-        }
-    }
-
     /**
      * 孩子个数为0： 修改父亲孩子为null
      * 孩子个数为1： 修改父亲孩子为该节点的孩子
      * 孩子个数为2： 找到该节点的直接前驱让直接前驱取代该节点
      */
+
+    private BSTNode removeHelper(BSTNode curNode, K key) {
+        if (curNode == null) {
+            return null;
+        }
+        int c = key.compareTo(curNode.key);
+        if (c > 0) {
+            curNode.leftChild = removeHelper(curNode.leftChild, key);
+        }
+        else if (c < 0) {
+            curNode.rightChild = removeHelper(curNode.rightChild, key);
+        }
+        else {
+            if (curNode.leftChild == null) {
+                return curNode.rightChild;
+            }
+            if (curNode.rightChild == null) {
+                return curNode.leftChild;
+            }
+            // find successor and replace
+            BSTNode successor = curNode.leftChild;
+            while (successor.rightChild != null) {
+                successor = successor.rightChild;
+            }
+            curNode.key = successor.key;
+            curNode.value = successor.value;
+            // delete successor
+            removeHelper(successor, successor.key);
+        }
+        return curNode;
+    }
 
     @Override
     public V remove(K key) {
@@ -158,18 +157,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
         }
         V v = this.get(key);
         this.size --;
-
-        BSTNode curNode = findNode(this.root, key);
-        int childNum = 0;
-        if (curNode.leftChild != null) {
-            childNum ++;
-        }
-        if (curNode.rightChild != null) {
-            childNum ++;
-        }
-
-
-
+        this.root = removeHelper(this.root, key);
         return v;
     }
 
@@ -180,12 +168,25 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>{
         }
         V v = this.get(key);
         this.size --;
-
+        this.root = removeHelper(this.root, key);
         return v;
     }
 
     @Override
     public Iterator<K> iterator() {
         return keySet().iterator();
+    }
+
+    public void printInOrder() {
+        printHelper(this.root);
+    }
+    private void printHelper(BSTNode curNode) {
+        if (curNode == null) {
+            return;
+        }
+        printHelper(curNode.leftChild);
+        System.out.println(curNode.key);
+        System.out.println(curNode.value);
+        printHelper(curNode.rightChild);
     }
 }
