@@ -41,6 +41,8 @@ public class Repository {
             System.exit(0);
         }
         // TODO
+        Commit.COMMIT_FOLDER.mkdir();
+        Commit initCommit = new Commit("initial commit", null);
     }
 
     /**
@@ -105,7 +107,7 @@ public class Repository {
      * file that’s already there if there is one.
      * @param fileName
      */
-    public static void checkoutWithFileName(String fileName) {
+    public static void checkoutFile(String fileName) {
 
     }
 
@@ -113,7 +115,7 @@ public class Repository {
      *
      * @param branchName
      */
-    public static void checkoutWithBranchName(String branchName) {
+    public static void checkoutBranch(String branchName) {
 
     }
 
@@ -124,7 +126,7 @@ public class Repository {
      * @param commitId
      * @param fileName
      */
-    public static void checkoutWithCommitAndFileName(String commitId, String fileName) {
+    public static void checkoutCommitFile(String commitId, String fileName) {
 
     }
 

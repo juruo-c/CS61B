@@ -15,6 +15,11 @@ public class Main {
         }
     }
 
+    /**
+     * Check if the command has the correct number of arguments
+     * @param argsLength
+     * @param neededLength
+     */
     private static void checkArgsLength(int argsLength, int neededLength) {
         if (argsLength != neededLength) {
             System.out.println("Incorrect operands.");
@@ -22,12 +27,20 @@ public class Main {
         }
     }
 
+    /**
+     * Check the legitimacy of command "checkout" arguments
+     * @param args
+     * @param length
+     */
     private static void checkOperands(String[] args, int length) {
         do {
-            if (length != 1 && length != 2) {
+            if (length < 1 || length > 3) {
                 break;
             }
-            if (length == 2 && !args[1].startsWith("--")) {
+            if (length == 2 && !args[0].equals("--")) {
+                break;
+            }
+            if (length == 3 && !args[1].equals("--")) {
                 break;
             }
             return;
@@ -53,12 +66,10 @@ public class Main {
         switch(firstArg) {
             case "init":
                 checkArgsLength(argsLength, 1);
-                // TODO: handle the `init` command
                 Repository.initRepository();
                 break;
             case "add":
                 checkArgsLength(argsLength, 2);
-                // TODO: handle the `add [filename]` command
                 Repository.addFile(args[1]);
                 break;
             case "commit":
@@ -87,14 +98,14 @@ public class Main {
                 break;
             case "checkout":
                 checkOperands(args, argsLength);
-                if (argsLength == 1 && args[0].startsWith("--")) {
-                    Repository.checkoutWithFileName(args[0].substring(2));
+                if (argsLength == 1) {
+                    Repository.checkoutBranch(args[0]);
                 }
-                else if (argsLength == 1) {
-                    Repository.checkoutWithBranchName(args[0]);
+                else if (argsLength == 2) {
+                    Repository.checkoutFile(args[1]);
                 }
                 else {
-                    Repository.checkoutWithCommitAndFileName(args[0], args[1].substring(2));
+                    Repository.checkoutCommitFile(args[0], args[2]);
                 }
             default:
                 System.out.println("No command with that name exists.");
