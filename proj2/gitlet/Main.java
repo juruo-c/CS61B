@@ -56,13 +56,13 @@ public class Main {
      */
     private static void checkOperands(String[] args, int length) {
         do {
-            if (length < 1 || length > 3) {
-                break;
-            }
-            if (length == 2 && !args[0].equals("--")) {
+            if (length < 2 || length > 4) {
                 break;
             }
             if (length == 3 && !args[1].equals("--")) {
+                break;
+            }
+            if (length == 4 && !args[2].equals("--")) {
                 break;
             }
             return;
@@ -217,21 +217,21 @@ public class Main {
                 break;
             case "checkout":
                 checkOperands(args, argsLength);
-                if (argsLength == 1) {
-                    Repository.checkoutBranch(args[0]);
+                if (argsLength == 2) {
+                    Repository.checkoutBranch(args[1]);
                 }
-                else if (argsLength == 2) {
+                else if (argsLength == 3) {
                     /* get head pointer */
                     getHead();
                     /* call checkoutFile function */
-                    Repository.checkoutFile(args[1]);
+                    Repository.checkoutFile(args[2]);
                     /* change nothing */
                 }
                 else {
                     /* get commit Tree */
                     getCommitTree();
                     /* call checkoutCommitFile function */
-                    Repository.checkoutCommitFile(args[0], args[2]);
+                    Repository.checkoutCommitFile(args[1], args[3]);
                     /* change nothing */
                 }
                 break;
