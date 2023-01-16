@@ -16,6 +16,8 @@ public class Main {
     public static File STAGING_AREA_REMOVE = join(Repository.STAGING_AREA, "REMOVAL");
     /** Commit Tree for all commits. */
     public static File COMMIT_TREE = join(Repository.GITLET_DIR, "TREE");
+    /** The set contains all branches' name. */
+    public static File BRANCH_SET = join(Repository.GITLET_DIR, "BRANCH_SET");
     /** The head pointer/current branch name/current branch pointer
      *  that the program maintains. */
     public static String HEAD;
@@ -27,6 +29,8 @@ public class Main {
     public static TreeMap<String, Integer> removalStage;
     /** The commit tree. */
     public static HashMap<String, Integer> commitTree;
+    /** The branch set. */
+    public static HashMap<String, Integer> branchSet;
 
     /** =================================== Functions =================================== */
     /**
@@ -98,6 +102,12 @@ public class Main {
         commitTree = readObject(COMMIT_TREE, HashMap.class);
     }
     /**
+     * Get branches set from .gitlet/BRANCH_SET
+     */
+    private static void getBranchSet() {
+        branchSet = readObject(BRANCH_SET, HashMap.class);
+    }
+    /**
      * Save HEAD pointer to .gitlet/HEAD.
      */
     public static void saveHead() {
@@ -128,6 +138,12 @@ public class Main {
     public static void saveCommitTree() {
         writeObject(COMMIT_TREE, commitTree);
     }
+    /**
+     * Save branches set to .gitlet/BRANCH_SET
+     */
+    public static void saveBranchSet() {
+        writeObject(BRANCH_SET, branchSet);
+    }
 
     /** Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
@@ -153,6 +169,7 @@ public class Main {
                 saveCurrentBranchPtr();
                 saveStagingArea();
                 saveCommitTree();
+                saveBranchSet();
                 break;
             case "add":
                 checkArgsLength(argsLength, 2);
@@ -218,7 +235,18 @@ public class Main {
             case "checkout":
                 checkOperands(args, argsLength);
                 if (argsLength == 2) {
+                    /* get head pointer, current branch,
+                    staging area and branches set */
+                    getHead();
+                    getCurrentBranch();
+                    getStagingArea();
+                    getBranchSet();
+                    /* call checkoutBranch function */
                     Repository.checkoutBranch(args[1]);
+                    /* change head pointer, current branch, staging area */
+                    saveHead();
+                    saveCurrentBranch();
+                    saveStagingArea();
                 }
                 else if (argsLength == 3) {
                     /* get head pointer */
@@ -234,6 +262,16 @@ public class Main {
                     Repository.checkoutCommitFile(args[1], args[3]);
                     /* change nothing */
                 }
+                break;
+            case "branch":
+                checkArgsLength(argsLength, 2);
+                /* get branches set and head pointer */
+                getBranchSet();
+                getHead();
+                /* call createBranch function */
+                Repository.createBranch(args[1]);
+                /* save branches set */
+                saveBranchSet();
                 break;
             default:
                 message("No command with that name exists.");

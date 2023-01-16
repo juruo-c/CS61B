@@ -45,13 +45,23 @@ public class Repository {
      * @param branchName
      * @return branch file
      */
-    private static File createBranch(String branchName) {
+    private static File createBranchFile(String branchName) {
         File branch = join(BRANCH_FOLDER, branchName);
         try {
             branch.createNewFile();
         } catch (IOException ignore) {
         }
         return branch;
+    }
+    /**
+     * Clears the staging area.
+     */
+    private static void clearStage() {
+        Main.removalStage.clear();
+        Main.additionStage.clear();
+        for (File file : Blob.STAGE_BLOB_FOLDER.listFiles()) {
+            file.delete();
+        }
     }
 
     /**
@@ -60,6 +70,7 @@ public class Repository {
      *     build the file structure for gitlet;
      *     make the initial commit;
      *     initialize all things and add initial commit to commit tree;
+     *     add the initial branch to branches set.
      */
     public static void initRepository() {
         /* build the file structure */
@@ -91,10 +102,13 @@ public class Repository {
         String commitId = Commit.initialCommit.getSha1Id();
         Main.CUR_BRANCH_PTR = Main.HEAD = commitId;
         Main.CUR_BRANCH = "master";
+        createBranchFile(Main.CUR_BRANCH);
         Main.additionStage = new TreeMap<>();
         Main.removalStage = new TreeMap<>();
         Main.commitTree = new HashMap<>();
         Main.commitTree.put(commitId, 1);
+        Main.branchSet = new HashMap<>();
+        Main.branchSet.put(Main.CUR_BRANCH, 1);
     }
 
     /**
@@ -174,11 +188,7 @@ public class Repository {
         curCommit.saveCommit();
         Main.commitTree.put(curCommit.getSha1Id(), 1);
         /* clear the addition staging area and the removal staging area */
-        Main.removalStage.clear();
-        Main.additionStage.clear();
-        for (File file : Blob.STAGE_BLOB_FOLDER.listFiles()) {
-            file.delete();
-        }
+        clearStage();
         /* change head pointer and current branch pointer */
         Main.HEAD = Main.CUR_BRANCH_PTR = curCommit.getSha1Id();
     }
@@ -334,11 +344,40 @@ public class Repository {
     }
 
     /**
-     *
+     * Set the given branch as the current branch.
      * @param branchName
+     *
+     * Step:
+     *     Check if the given branch exists;
+     *     Check if the given branch equals to the current branch;
+     *     Check If a working file is untracked in the current branch
+     *     and would be overwritten by the checkout;
+     *     Takes all files in the commit at the head of the given branch,
+     *     and puts them in the working directory;
      */
     public static void checkoutBranch(String branchName) {
+        /* some check */
+        if (!Main.branchSet.containsKey(branchName)) {
+            message("No such branch exists.");
+            System.exit(0);
+        }
+        if (Main.CUR_BRANCH.equals(branchName)) {
+            message("No need to checkout the current branch.");
+            System.exit(0);
+        }
+        Commit headCommit = Commit.fromFile(Main.HEAD);
+        Commit checkCommit = Commit.fromFile(readObject(join(BRANCH_FOLDER, branchName), String.class));
+        /* untracked file check */
+        for (String fileName : plainFilenamesIn(CWD)) {
+            if (!headCommit.containsFile(fileName)) {
+                message("There is an untracked file in the way; delete it, or add and commit it first.");
+                System.exit(0);
+            }
+        }
+        /* overwriting the files in the current working directory */
+        for (Map.Entry<String, String> file : checkCommit.getTrackedFiles().entrySet()) {
 
+        }
     }
 
     /**
@@ -366,6 +405,27 @@ public class Repository {
         }
         /* overwrite the file */
         writeContents(join(CWD, fileName), givenCommit.getFileContent(fileName));
+    }
+
+    /**
+     * Create a new branch with the given name.
+     * Step:
+     *     Check if the branch has been existed;
+     *     Create a new branch file and add the branch name into branches set;
+     *     Point the new branch pointer at the current head commit.
+     * @param branchName
+     */
+    public static void createBranch(String branchName) {
+        /* check if the branch exists */
+        if (!Main.branchSet.containsKey(branchName)) {
+            message("A branch with that name already exists.");
+            System.exit(0);
+        }
+        /* create new branch file and add new branch to branches set */
+        File newBranch = createBranchFile(branchName);
+        Main.branchSet.put(branchName, 1);
+        /* point it at the current head commit */
+        writeObject(newBranch, Main.HEAD);
     }
 
 }
