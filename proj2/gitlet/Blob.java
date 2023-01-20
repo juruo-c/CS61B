@@ -70,7 +70,7 @@ public class Blob implements Serializable {
                 file.createNewFile();
             }
         } catch (IOException ignore) {
-
+            throw error("save blob error");
         }
         writeObject(file, this);
     }

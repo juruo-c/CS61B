@@ -6,19 +6,13 @@ import java.util.*;
 
 import static gitlet.Utils.*;
 
-// TODO: any imports you need here
-
 /** Represents a gitlet repository.
- *  TODO: It's a good idea to give a description here of what else this Class does at a high level.
- *
- *
  *
  *  @author Yang Zheng
  */
 
 public class Repository {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Repository class here with a useful
      * comment above them describing what that variable represents and how that
@@ -50,6 +44,7 @@ public class Repository {
         try {
             branch.createNewFile();
         } catch (IOException ignore) {
+            throw error("create branch file error");
         }
         return branch;
     }
@@ -76,10 +71,9 @@ public class Repository {
         /* build the file structure */
         if (!GITLET_DIR.exists()) {
             GITLET_DIR.mkdir();
-        }
-        else {
-            message("A Gitlet version-control system already " +
-                    "exists in the current directory.");
+        } else {
+            message("A Gitlet version-control system already "
+                    + "exists in the current directory.");
             System.exit(0);
         }
         OBJECT_FOLDER.mkdir();
@@ -94,6 +88,7 @@ public class Repository {
             Main.STAGING_AREA_ADD.createNewFile();
             Main.STAGING_AREA_REMOVE.createNewFile();
         } catch (IOException ignore) {
+            throw error("initialize repository error");
         }
         /* make the initial commit and save to file named by its unique sha1 id */
         Commit.initialCommit.saveCommit();
@@ -136,8 +131,7 @@ public class Repository {
             if (Main.additionStage.containsKey(fileName)) {
                 Main.additionStage.remove(fileName);
             }
-        }
-        else { // different version
+        } else { // different version
             /* put the current version of given file to the staging area for addition */
             Main.additionStage.put(fileName, curFile.getSha1Id());
             /* save the blob */
@@ -205,8 +199,8 @@ public class Repository {
     public static void removeFile(String fileName) {
         Commit headCommit = Commit.fromFile(Main.HEAD);
         /* check the given file status */
-        if (!Main.additionStage.containsKey(fileName) &&
-            !headCommit.containsFile(fileName)) {
+        if (!Main.additionStage.containsKey(fileName)
+                && !headCommit.containsFile(fileName)) {
             message("No reason to remove the file.");
             System.exit(0);
         }
@@ -303,8 +297,7 @@ public class Repository {
         for (Map.Entry<String, Integer> branch : branches.entrySet()) {
             if (branch.getKey().equals(Main.CUR_BRANCH)) {
                 message("*%s", branch.getKey());
-            }
-            else {
+            } else {
                 message("%s", branch.getKey());
             }
         }
@@ -362,7 +355,8 @@ public class Repository {
         /* untracked file check */
         for (String fileName : plainFilenamesIn(CWD)) {
             if (!headCommit.containsFile(fileName) && checkCommit.containsFile(fileName)) {
-                message("There is an untracked file in the way; delete it, or add and commit it first.");
+                message("There is an untracked file in the way; "
+                        + "delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
@@ -380,9 +374,9 @@ public class Repository {
                 if (curFile.exists()) {
                     curFile.delete();
                 }
-            }
-            else { // the file is tracked by both commits or just by the check commit, overwrite the version in the CWD
-                writeContents(join(CWD, fileName), Blob.fromFile(Blob.BLOB_FOLDER, blobId).getContent());
+            } else { // the file is tracked by both commits or just by the check commit, overwrite the version in the CWD
+                writeContents(join(CWD, fileName),
+                        Blob.fromFile(Blob.BLOB_FOLDER, blobId).getContent());
             }
         }
         /* change the head pointer */
@@ -411,7 +405,8 @@ public class Repository {
             System.exit(0);
         }
         Commit headCommit = Commit.fromFile(Main.HEAD);
-        Commit checkCommit = Commit.fromFile(readObject(join(BRANCH_FOLDER, branchName), String.class));
+        Commit checkCommit = Commit.fromFile(
+                readObject(join(BRANCH_FOLDER, branchName), String.class));
         /* check out from headCommit to checkCommit */
         checkout(headCommit, checkCommit);
         /* change current branch pointer */
@@ -587,38 +582,30 @@ public class Repository {
             /* different file types */
             if (verInCur != null && verInGiven != null) {
                 return verInCur.equals(verInGiven) ? 3 : 4;
-            }
-            else if (verInCur != null && verInGiven == null) {
+            } else if (verInCur != null && verInGiven == null) {
                 return 5;
-            }
-            else if (verInCur == null && verInGiven != null) {
+            } else if (verInCur == null && verInGiven != null) {
                 return 6;
             }
 
-        }
-        else {
+        } else {
             boolean modInCur = !verInSplit.equals(verInCur);
             boolean modInGiven = !verInSplit.equals(verInGiven);
             /* different file types */
             if (!modInGiven && verInCur == null) {
                 return 8;
-            }
-            else if (!modInGiven && modInCur) {
+            } else if (!modInGiven && modInCur) {
                 return 2;
-            }
-            else if(modInGiven && modInCur) {
-                if ((verInCur == null && verInGiven == null) ||
-                        (verInCur != null && verInCur.equals(verInGiven))) {
+            } else if (modInGiven && modInCur) {
+                if ((verInCur == null && verInGiven == null)
+                        || (verInCur != null && verInCur.equals(verInGiven))) {
                     return 3;
-                }
-                else {
+                } else {
                     return 4;
                 }
-            }
-            else if (verInGiven == null) {
+            } else if (verInGiven == null) {
                 return 7;
-            }
-            else if (modInGiven) {
+            } else if (modInGiven) {
                 return 1;
             }
         }
@@ -683,7 +670,8 @@ public class Repository {
         for (String fileName : plainFilenamesIn(CWD)) {
             int fileType = getFileType(fileName, splitPoint, curCommit, givenCommit);
             if (!curCommit.containsFile(fileName) && ifFileChanged(fileType)) {
-                message("There is an untracked file in the way; delete it, or add and commit it first.");
+                message("There is an untracked file in the way; "
+                        + "delete it, or add and commit it first.");
                 System.exit(0);
             }
         }
@@ -701,20 +689,22 @@ public class Repository {
                 if (fileType == 1 || fileType == 6) { // change the version of file to that in the given commit
                     checkoutCommitFile(givenBranch, fileName);
                     addFile(fileName);
-                }
-                else if (fileType == 4) { // conflict
+                } else if (fileType == 4) { // conflict
                     String verInCur = curCommit.getFileVersion(fileName);
                     String verInGiven = givenCommit.getFileVersion(fileName);
                     writeContents(join(CWD, fileName),
                             "<<<<<<< HEAD\n",
-                            verInCur != null ? Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent() : "",
+                            verInCur != null
+                                    ? Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent()
+                                    : "",
                             "=======\n",
-                            verInGiven != null ? Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent() : "",
+                            verInGiven != null
+                                    ? Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent()
+                                    : "",
                             ">>>>>>>\n");
                     addFile(fileName);
                     meetConflict = true;
-                }
-                else if (fileType == 7) { // remove file
+                } else if (fileType == 7) { // remove file
                     removeFile(fileName);
                 }
             }

@@ -4,18 +4,16 @@ import static gitlet.Utils.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
 /** Represents a gitlet commit object.
- *  TODO: It's a good idea to give a description here of what else this Class does at a high level.
  *
  *  @author Yang Zheng
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
      *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
@@ -54,8 +52,7 @@ public class Commit implements Serializable {
         if (firstParent == null) {
             this.date = new Date(0);
             this.trackedFiles = new TreeMap<>();
-        }
-        else {
+        } else {
             this.date = new Date();
             this.trackedFiles = new TreeMap<>(fromFile(firstParent).getTrackedFiles());
         }
@@ -142,6 +139,7 @@ public class Commit implements Serializable {
                 file.createNewFile();
             }
         } catch (IOException ignore) {
+            throw error("save Commit error");
         }
         writeObject(file, this);
     }
@@ -153,8 +151,8 @@ public class Commit implements Serializable {
      * @return true if tracked, false if untracked.
      */
     public boolean containsFileVersion(String fileName, String blobSh1Id) {
-        return trackedFiles.containsKey(fileName) &&
-                trackedFiles.get(fileName).equals(blobSh1Id);
+        return trackedFiles.containsKey(fileName)
+                && trackedFiles.get(fileName).equals(blobSh1Id);
     }
     /**
      * Check if the commit tracks the given file with specified version
