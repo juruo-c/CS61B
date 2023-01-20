@@ -6,7 +6,6 @@ import java.io.Serializable;
 import static gitlet.Utils.*;
 
 /** Represents a gitlet blob object.
- *  TODO: It's a good idea to give a description here of what else this Class does at a high level.
  *
  *  @author Yang Zheng
  */
@@ -71,6 +70,7 @@ public class Blob implements Serializable {
                 file.createNewFile();
             }
         } catch (IOException ignore) {
+
         }
         writeObject(file, this);
     }

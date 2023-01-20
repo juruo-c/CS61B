@@ -118,7 +118,8 @@ public class Repository {
      *     check if the current commit(HEAD) has the same version of
      *     the given file with that in the current working directory;
      *     if same and the staging area contains the given file: remove it;
-     *     if different: just update staging area and save blob
+     *     if different: just update staging area and save blob;
+     *     Remove the file from removal staging area.
      */
     public static void addFile(String fileName) {
         /* check if the current working directory contains the given file */
@@ -137,13 +138,13 @@ public class Repository {
             }
         }
         else { // different version
-            /* put the current version of given file to the staging area
-            *  for addition and remove the file from staging area for removal */
+            /* put the current version of given file to the staging area for addition */
             Main.additionStage.put(fileName, curFile.getSha1Id());
-            Main.removalStage.remove(fileName);
             /* save the blob */
             curFile.saveBlob(Blob.STAGE_BLOB_FOLDER);
         }
+        /* remove the file from staging area for removal */
+        Main.removalStage.remove(fileName);
     }
 
     /**
@@ -700,7 +701,7 @@ public class Repository {
                     String verInGiven = givenCommit.getFileVersion(fileName);
                     writeContents(join(CWD, fileName), "<<<<<<< HEAD",
                             Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent(),
-                            "=======", Blob.fromFile(Blob.BLOB_FOLDER, verInGiven),
+                            "=======", Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent(),
                             ">>>>>>>");
                     addFile(fileName);
                     meetConflict = true;
@@ -711,7 +712,7 @@ public class Repository {
             }
         }
         /* commit the merge */
-        makeCommit("Merged " + branchName + " into " + Main.CUR_BRANCH, givenBranch);
+        makeCommit("Merged " + branchName + " into " + Main.CUR_BRANCH, givenBranch + ".");
         if (meetConflict) {
             message("Encountered a merge conflict.");
         }
