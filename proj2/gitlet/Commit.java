@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Map;
 import java.util.TreeMap;
 
 /** Represents a gitlet commit object.
@@ -25,35 +26,38 @@ public class Commit implements Serializable {
     /** The path of all commits folder. */
     public static final File COMMIT_FOLDER = join(Repository.OBJECT_FOLDER, "commits");
     /** The initial commit. */
-    public static Commit initialCommit = new Commit("initial commit", null);
+    public static Commit initialCommit = new Commit("initial commit", null, null);
 
     /** The message of this Commit. */
     private String message;
-    /** The parent of this Commit. */
-    private String parent;
+    /** The first parent of this Commit. */
+    private String firstParent;
+    /** The second parent of this Commit. */
+    private String secondParent;
     /** The date when this commit made. */
     Date date;
     /** The tracked files of this commit. */
-    TreeMap<String, String> trackedFiles;
+    Map<String, String> trackedFiles;
 
     /** =================================== Constructors =================================== */
     /**
      * Create a commit object with the specified parameters.
      *
      * @param message
-     * @param parent
+     * @param firstParent
      */
-    public Commit(String message, String parent) {
+    public Commit(String message, String firstParent, String secondParent) {
         /* check if it is the initial commit */
         this.message = message;
-        this.parent = parent;
-        if (parent == null) {
+        this.firstParent = firstParent;
+        this.secondParent = secondParent;
+        if (firstParent == null) {
             this.date = new Date(0);
             this.trackedFiles = new TreeMap<>();
         }
         else {
             this.date = new Date();
-            this.trackedFiles = new TreeMap<>(fromFile(parent).getTrackedFiles());
+            this.trackedFiles = new TreeMap<>(fromFile(firstParent).getTrackedFiles());
         }
     }
 
@@ -69,14 +73,20 @@ public class Commit implements Serializable {
     /**
      * Get the tracked files of this commit.
      */
-    public TreeMap<String, String> getTrackedFiles() {
+    public Map<String, String> getTrackedFiles() {
         return this.trackedFiles;
     }
     /**
-     * Get the parent commit(SHA-1 id) of this commit.
+     * Get the firstParent commit(SHA-1 id) of this commit.
      */
-    public String getParent() {
-        return this.parent;
+    public String getFirstParent() {
+        return this.firstParent;
+    }
+    /**
+     * Get the secondParent commit(SHA-1 id) of this commit.
+     */
+    public String getSecondParent() {
+        return this.secondParent;
     }
     /**
      * Get the creation date of this commit.
@@ -97,6 +107,18 @@ public class Commit implements Serializable {
     public byte[] getFileContent(String fileName) {
         String blobId = trackedFiles.get(fileName);
         return Blob.fromFile(Blob.BLOB_FOLDER, blobId).getContent();
+    }
+    /**
+     * Return the blob id of the given file if the file is tracked by this commit,
+     * else return null.
+     * @param fileName
+     * @return blob id or null
+     */
+    public String getFileVersion(String fileName) {
+        if (!trackedFiles.containsKey(fileName)) {
+            return null;
+        }
+        return trackedFiles.get(fileName);
     }
 
     /** =================================== Other Functions =================================== */

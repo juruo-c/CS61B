@@ -28,7 +28,7 @@ public class Main {
     /** The staging area that the program maintains for removal. */
     public static TreeMap<String, Integer> removalStage;
     /** The commit tree. */
-    public static HashMap<String, Integer> commitTree;
+    public static HashMap<String, Integer> commitSet;
     /** The branch set. */
     public static HashMap<String, Integer> branchSet;
 
@@ -98,8 +98,8 @@ public class Main {
     /**
      * Get commit tree from .gitlet/TREE
      */
-    private static void getCommitTree() {
-        commitTree = readObject(COMMIT_TREE, HashMap.class);
+    private static void getcommitSet() {
+        commitSet = readObject(COMMIT_TREE, HashMap.class);
     }
     /**
      * Get branches set from .gitlet/BRANCH_SET
@@ -135,8 +135,8 @@ public class Main {
     /**
      * Save commit Tree to .gitlet/TREE
      */
-    public static void saveCommitTree() {
-        writeObject(COMMIT_TREE, commitTree);
+    public static void savecommitSet() {
+        writeObject(COMMIT_TREE, commitSet);
     }
     /**
      * Save branches set to .gitlet/BRANCH_SET
@@ -168,7 +168,7 @@ public class Main {
                 saveCurrentBranch();
                 saveCurrentBranchPtr();
                 saveStagingArea();
-                saveCommitTree();
+                savecommitSet();
                 saveBranchSet();
                 break;
             case "add":
@@ -187,14 +187,14 @@ public class Main {
                 getHead();
                 getStagingArea();
                 getCurrentBranch();
-                getCommitTree();
+                getcommitSet();
                 /* call makeCommit function */
-                Repository.makeCommit(args[1]);
+                Repository.makeCommit(args[1], null);
                 /* commit command change all thing except current branch */
                 saveHead();
                 saveStagingArea();
                 saveCurrentBranchPtr();
-                saveCommitTree();
+                savecommitSet();
                 break;
             case "rm":
                 checkArgsLength(argsLength, 2);
@@ -257,7 +257,7 @@ public class Main {
                 }
                 else {
                     /* get commit Tree */
-                    getCommitTree();
+                    getcommitSet();
                     /* call checkoutCommitFile function */
                     Repository.checkoutCommitFile(args[1], args[3]);
                     /* change nothing */
@@ -272,6 +272,44 @@ public class Main {
                 Repository.createBranch(args[1]);
                 /* save branches set */
                 saveBranchSet();
+                break;
+            case "rm-branch":
+                checkArgsLength(argsLength, 2);
+                /* get the branch set and the current branch name */
+                getBranchSet();
+                getCurrentBranch();
+                /* call removeBranch function */
+                Repository.removeBranch(args[1]);
+                /* save branches set */
+                saveBranchSet();
+                break;
+            case "reset":
+                checkArgsLength(argsLength, 2);
+                /* get head pointer, staging area and commit tree */
+                getHead();
+                getStagingArea();
+                getcommitSet();
+                /* call checkoutBranch function */
+                Repository.resetCommit(args[1]);
+                /* change head pointer, current branch, staging area */
+                saveHead();
+                saveStagingArea();
+                break;
+            case "merge":
+                checkArgsLength(argsLength, 2);
+                /* get all things */
+                getHead();
+                getCurrentBranch();
+                getStagingArea();
+                getcommitSet();
+                getBranchSet();
+                /* call merge function */
+                Repository.merge(args[1]);
+                /* change all things that get except the branch set */
+                saveHead();
+                saveCurrentBranch();
+                saveStagingArea();
+                savecommitSet();
                 break;
             default:
                 message("No command with that name exists.");
