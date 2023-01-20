@@ -451,7 +451,7 @@ public class Repository {
      */
     public static void createBranch(String branchName) {
         /* check if the branch exists */
-        if (!Main.branchSet.containsKey(branchName)) {
+        if (Main.branchSet.containsKey(branchName)) {
             message("A branch with that name already exists.");
             System.exit(0);
         }
