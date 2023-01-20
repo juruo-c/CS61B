@@ -364,17 +364,20 @@ public class Repository {
         Map<String, String> trackedFileSet = new HashMap<>();
         trackedFileSet.putAll(headCommit.getTrackedFiles());
         trackedFileSet.putAll(checkCommit.getTrackedFiles());
-        /* put or overwrite or remove file from the current working directory according to different situation */
+        /* put or overwrite or remove file from the current working directory
+           according to different situation */
         for (Map.Entry<String, String> file : trackedFileSet.entrySet()) {
             String fileName = file.getKey();
             String blobId = file.getValue();
-            // if the file is just tracked by the current commit, remove it from the CWD if it is there.
+            // if the file is just tracked by the current commit,
+            // remove it from the CWD if it is there.
             if (headCommit.containsFile(fileName) && !checkCommit.containsFile(fileName)) {
                 File curFile = join(CWD, fileName);
                 if (curFile.exists()) {
                     curFile.delete();
                 }
-            } else { // the file is tracked by both commits or just by the check commit, overwrite the version in the CWD
+            } else { // the file is tracked by both commits or just by the check commit,
+                // overwrite the version in the CWD
                 writeContents(join(CWD, fileName),
                         Blob.fromFile(Blob.BLOB_FOLDER, blobId).getContent());
             }
@@ -634,12 +637,10 @@ public class Repository {
      *     Get the file set consist of the split, current and given commit;
      */
     public static void merge(String branchName) {
-        /* check if the staging area is empty */
         if (!Main.additionStage.isEmpty() || !Main.removalStage.isEmpty()) {
             message("You have uncommitted changes.");
             System.exit(0);
         }
-        /* check if the given branch exist */
         if (!Main.branchSet.containsKey(branchName)) {
             message("A branch with that name does not exist.");
             System.exit(0);
@@ -664,7 +665,8 @@ public class Repository {
             message("Current branch fast-forwarded.");
             System.exit(0);
         }
-        /* check if there is an untracked file in the current commit would be changed by the merge */
+        /* check if there is an untracked file in the current commit
+           would be changed by the merge */
         Commit curCommit = Commit.fromFile(Main.HEAD);
         Commit givenCommit = Commit.fromFile(givenBranch);
         for (String fileName : plainFilenamesIn(CWD)) {
@@ -680,13 +682,15 @@ public class Repository {
         fileSet.putAll(splitPoint.getTrackedFiles());
         fileSet.putAll(curCommit.getTrackedFiles());
         fileSet.putAll(givenCommit.getTrackedFiles());
-        /* iterate the fileSet, get type of each file, make change if the file would be change in the file system */
+        /* iterate the fileSet, get type of each file,
+        make change if the file would be change in the file system */
         boolean meetConflict = false;
         for (Map.Entry<String, String> file : fileSet.entrySet()) {
             String fileName = file.getKey();
             int fileType = getFileType(fileName, splitPoint, curCommit, givenCommit);
             if (ifFileChanged(fileType)) {
-                if (fileType == 1 || fileType == 6) { // change the version of file to that in the given commit
+                if (fileType == 1 || fileType == 6) {
+                    // change the version of file to that in the given commit
                     checkoutCommitFile(givenBranch, fileName);
                     addFile(fileName);
                 } else if (fileType == 4) { // conflict
@@ -696,12 +700,10 @@ public class Repository {
                             "<<<<<<< HEAD\n",
                             verInCur != null
                                     ? Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent()
-                                    : "",
-                            "=======\n",
+                                    : "", "=======\n",
                             verInGiven != null
                                     ? Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent()
-                                    : "",
-                            ">>>>>>>\n");
+                                    : "", ">>>>>>>\n");
                     addFile(fileName);
                     meetConflict = true;
                 } else if (fileType == 7) { // remove file

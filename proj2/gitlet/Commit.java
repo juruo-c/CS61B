@@ -24,7 +24,7 @@ public class Commit implements Serializable {
     /** The path of all commits folder. */
     public static final File COMMIT_FOLDER = join(Repository.OBJECT_FOLDER, "commits");
     /** The initial commit. */
-    public static Commit initialCommit = new Commit("initial commit", null, null);
+    public static final Commit initialCommit = new Commit("initial commit", null, null);
 
     /** The message of this Commit. */
     private String message;
