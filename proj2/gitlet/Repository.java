@@ -707,7 +707,7 @@ public class Repository {
                             verInCur != null ? Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent() : "",
                             "=======\n",
                             verInGiven != null ? Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent() : "",
-                            ">>>>>>>");
+                            ">>>>>>>\n");
                     addFile(fileName);
                     meetConflict = true;
                 }
