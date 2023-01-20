@@ -91,10 +91,10 @@ public class Repository {
             throw error("initialize repository error");
         }
         /* make the initial commit and save to file named by its unique sha1 id */
-        Commit.initialCommit.saveCommit();
+        Commit.INITIAL_COMMIT.saveCommit();
         /* initial the head pointer, master pointer, initial branch and staging area;
            add the initial commit to the commit tree */
-        String commitId = Commit.initialCommit.getSha1Id();
+        String commitId = Commit.INITIAL_COMMIT.getSha1Id();
         Main.CUR_BRANCH_PTR = Main.HEAD = commitId;
         Main.CUR_BRANCH = "master";
         createBranchFile(Main.CUR_BRANCH);
@@ -429,9 +429,20 @@ public class Repository {
      *     Overwrite the file in the current working directory.
      */
     public static void checkoutCommitFile(String commitId, String fileName) {
-        // TODO use commit id shorter
         /* check if commit exists and file exists */
-        if (!Main.commitSet.containsKey(commitId)) {
+        if (commitId.length() < 40) {
+            boolean found = false;
+            for (Map.Entry<String, Integer> commit : Main.commitSet.entrySet()) {
+                if (commit.getKey().startsWith(commitId)) {
+                    commitId = commit.getKey();
+                    found = true;
+                }
+            }
+            if (!found) {
+                message("No commit with that id exists.");
+                System.exit(0);
+            }
+        } else if (!Main.commitSet.containsKey(commitId)) {
             message("No commit with that id exists.");
             System.exit(0);
         }
@@ -498,8 +509,20 @@ public class Repository {
      *     Set the current branch's head as the given commit.
      */
     public static void resetCommit(String commitId) {
-        /* check if the commit exists */
-        if (!Main.commitSet.containsKey(commitId)) {
+        /* check if commit exists and file exists */
+        if (commitId.length() < 40) {
+            boolean found = false;
+            for (Map.Entry<String, Integer> commit : Main.commitSet.entrySet()) {
+                if (commit.getKey().startsWith(commitId)) {
+                    commitId = commit.getKey();
+                    found = true;
+                }
+            }
+            if (!found) {
+                message("No commit with that id exists.");
+                System.exit(0);
+            }
+        } else if (!Main.commitSet.containsKey(commitId)) {
             message("No commit with that id exists.");
             System.exit(0);
         }
@@ -635,6 +658,8 @@ public class Repository {
      *     Check if the split point equals to the given branch head commit;
      *     Check if the split point equals to the head commit;
      *     Get the file set consist of the split, current and given commit;
+     *     Change files if necessary;
+     *     Commit the merge.
      */
     public static void merge(String branchName) {
         if (!Main.additionStage.isEmpty() || !Main.removalStage.isEmpty()) {
@@ -689,8 +714,7 @@ public class Repository {
             String fileName = file.getKey();
             int fileType = getFileType(fileName, splitPoint, curCommit, givenCommit);
             if (ifFileChanged(fileType)) {
-                if (fileType == 1 || fileType == 6) {
-                    // change the version of file to that in the given commit
+                if (fileType == 1 || fileType == 6) { // change the version of file
                     checkoutCommitFile(givenBranch, fileName);
                     addFile(fileName);
                 } else if (fileType == 4) { // conflict

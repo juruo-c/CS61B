@@ -149,7 +149,6 @@ public class Main {
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) {
-        // TODO: what if args is empty?
         int argsLength = args.length;
         if (argsLength == 0) {
             message("Please enter a command.");
