@@ -496,7 +496,8 @@ public class Repository {
      *
      * Step:
      *     Check if the commit exists in the commit tree;
-     *     Check out from the head commit to the check commit.
+     *     Check out from the head commit to the check commit;
+     *     Set the current branch's head as the given commit.
      */
     public static void resetCommit(String commitId) {
         /* check if the commit exists */
@@ -508,6 +509,8 @@ public class Repository {
         Commit checkCommit = Commit.fromFile(commitId);
         /* check out from the headCommit to the checkCommit */
         checkout(headCommit, checkCommit);
+        /* move the current branch's head */
+        Main.CUR_BRANCH_PTR = commitId;
     }
 
     /**

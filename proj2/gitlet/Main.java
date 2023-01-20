@@ -285,14 +285,16 @@ public class Main {
                 break;
             case "reset":
                 checkArgsLength(argsLength, 2);
-                /* get head pointer, staging area and commit tree */
+                /* get head pointer, current branch pointer, staging area and commit tree */
                 getHead();
+                getCurrentBranch();
                 getStagingArea();
                 getcommitSet();
                 /* call checkoutBranch function */
                 Repository.resetCommit(args[1]);
-                /* change head pointer, current branch, staging area */
+                /* change head pointer, current branch pointer, staging area */
                 saveHead();
+                saveCurrentBranchPtr();
                 saveStagingArea();
                 break;
             case "merge":
