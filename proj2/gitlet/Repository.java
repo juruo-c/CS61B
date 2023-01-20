@@ -240,6 +240,10 @@ public class Repository {
             Date date = curCommit.getDate();
             message("===");
             message("commit %s", cur);
+            if (curCommit.getSecondParent() != null) {
+                message("Merge: %s %s", curCommit.getFirstParent().substring(0, 7),
+                        curCommit.getSecondParent().substring(0, 7));
+            }
             message("Date: %ta %tb %te %tT %tY %tz",
                     date, date, date, date, date, date);
             message("%s\n", curCommit.getMessage());
@@ -413,7 +417,6 @@ public class Repository {
         /* change current branch pointer */
         Main.CUR_BRANCH_PTR = checkCommit.getSha1Id();
         Main.CUR_BRANCH = branchName;
-
     }
     /**
      * Takes the version of the file as it exists in the commit with the
@@ -699,9 +702,11 @@ public class Repository {
                 else if (fileType == 4) { // conflict
                     String verInCur = curCommit.getFileVersion(fileName);
                     String verInGiven = givenCommit.getFileVersion(fileName);
-                    writeContents(join(CWD, fileName), "<<<<<<< HEAD",
-                            Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent(),
-                            "=======", Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent(),
+                    writeContents(join(CWD, fileName),
+                            "<<<<<<< HEAD\n",
+                            verInCur != null ? Blob.fromFile(Blob.BLOB_FOLDER, verInCur).getContent() : "",
+                            "=======\n",
+                            verInGiven != null ? Blob.fromFile(Blob.BLOB_FOLDER, verInGiven).getContent() : "",
                             ">>>>>>>");
                     addFile(fileName);
                     meetConflict = true;
@@ -712,7 +717,7 @@ public class Repository {
             }
         }
         /* commit the merge */
-        makeCommit("Merged " + branchName + " into " + Main.CUR_BRANCH, givenBranch + ".");
+        makeCommit("Merged " + branchName + " into " + Main.CUR_BRANCH + ".", givenBranch);
         if (meetConflict) {
             message("Encountered a merge conflict.");
         }
