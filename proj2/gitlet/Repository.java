@@ -325,7 +325,7 @@ public class Repository {
                 }
                 // tracked in current commit, changed but not staged
                 if (!Main.additionStage.containsKey(fileName)) {
-                    modButNotStaged.put(fileName, 1);
+                    modButNotStaged.put(fileName + " (modified)", 1);
                 }
             } else { // not tracked
                 // nor staged for addition
@@ -339,19 +339,19 @@ public class Repository {
             String version = file.getValue();
             File curFile = join(CWD, fileName);
             if (!curFile.exists()) { // staged for addition but not exists in CWD
-                modButNotStaged.put(fileName, 1);
+                modButNotStaged.put(fileName + " (deleted)", 1);
                 continue;
             }
             String versionInCWD = (new Blob(fileName, readContents(curFile))).getSha1Id();
             if (!version.equals(versionInCWD)) { // staged but changed
-                modButNotStaged.put(fileName, 1);
+                modButNotStaged.put(fileName + " (modified)", 1);
             }
         }
         for (Map.Entry<String, String> file : curCommit.getTrackedFiles().entrySet()) {
             String fileName = file.getKey();
-            if (!Main.removalStage.containsKey(fileName)
-            && !join(CWD, fileName).exists()) { // tracked, not exists in CWD but not staged
-                modButNotStaged.put(fileName, 1);
+            // tracked, not exists in CWD but not staged
+            if (!Main.removalStage.containsKey(fileName) && !join(CWD, fileName).exists()) {
+                modButNotStaged.put(fileName + " (deleted)", 1);
             }
         }
         message("=== Modifications Not Staged For Commit ===");
@@ -360,8 +360,8 @@ public class Repository {
         }
         message("");
         message("=== Untracked Files ===");
-        for (Map.Entry<String, Integer> untrackedFile : untracked.entrySet()) {
-            message("%s", untrackedFile.getKey());
+        for (Map.Entry<String, Integer> file : untracked.entrySet()) {
+            message("%s", file.getKey());
         }
         message("");
     }
