@@ -312,11 +312,57 @@ public class Repository {
             message("%s", removedFile.getKey());
         }
         message("");
+        Commit curCommit = Commit.fromFile(Main.HEAD);
+        TreeMap<String, Integer> modButNotStaged = new TreeMap<>();
+        TreeMap<String, Integer> untracked = new TreeMap<>();
+        for (String fileName : plainFilenamesIn(CWD)) {
+            if (curCommit.containsFile(fileName)) {
+                String verInCurCommit = curCommit.getFileVersion(fileName);
+                Blob blob = new Blob(fileName, readContents(join(CWD, fileName)));
+                String curVersion = blob.getSha1Id();
+                if (verInCurCommit.equals(curVersion)) {
+                    continue;
+                }
+                // tracked in current commit, changed but not staged
+                if (!Main.additionStage.containsKey(fileName)) {
+                    modButNotStaged.put(fileName, 1);
+                }
+            } else { // not tracked
+                // nor staged for addition
+                if (!Main.additionStage.containsKey(fileName)) {
+                    untracked.put(fileName, 1);
+                }
+            }
+        }
+        for (Map.Entry<String, String> file : Main.additionStage.entrySet()) {
+            String fileName = file.getKey();
+            String version = file.getValue();
+            File curFile = join(CWD, fileName);
+            if (!curFile.exists()) { // staged for addition but not exists in CWD
+                modButNotStaged.put(fileName, 1);
+                continue;
+            }
+            String versionInCWD = (new Blob(fileName, readContents(curFile))).getSha1Id();
+            if (!version.equals(versionInCWD)) { // staged but changed
+                modButNotStaged.put(fileName, 1);
+            }
+        }
+        for (Map.Entry<String, String> file : curCommit.getTrackedFiles().entrySet()) {
+            String fileName = file.getKey();
+            if (!Main.removalStage.containsKey(fileName)
+            && !join(CWD, fileName).exists()) { // tracked, not exists in CWD but not staged
+                modButNotStaged.put(fileName, 1);
+            }
+        }
         message("=== Modifications Not Staged For Commit ===");
-        // TODO
+        for (Map.Entry<String, Integer> file : modButNotStaged.entrySet()) {
+            message("%s", file.getKey());
+        }
         message("");
         message("=== Untracked Files ===");
-        // TODO
+        for (Map.Entry<String, Integer> untrackedFile : untracked.entrySet()) {
+            message("%s", untrackedFile.getKey());
+        }
         message("");
     }
     /**
